@@ -142,11 +142,14 @@ module Jekyll
     #
     # Returns <Hash>
     def to_liquid
-      { "title" => self.data["title"] || "",
+      props = { "title" => self.data["title"] || "",
         "url" => self.url,
         "date" => self.date,
         "id" => self.id,
         "content" => self.content }
+      props.merge(self.data) do |key, old, new|
+        old
+      end
     end
   end
 
