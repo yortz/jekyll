@@ -53,10 +53,30 @@ module Jekyll
       layout = layouts[self.data["layout"]]
       while layout
         payload = payload.merge({"content" => self.output, "page" => self.data})
+
+        # process any scripts
+        if layout.data["scripts"]
+          payload = payload.merge(self.do_scripts(layout.data["scripts"]))
+        end
+
         self.output = Liquid::Template.parse(layout.content).render(payload, [Jekyll::Filters])
         
         layout = layouts[layout.data["layout"]]
       end
+    end
+
+    # Process scripts for the layout
+    #   +scripts+ is a Array of [{"name" => "foo", "command": "foo.py"}]
+    #
+    # Returns a Hash of {"foo" => "... script output ..."}
+    def do_scripts(scripts)
+      result = {}
+      scripts.each do |script|
+        p = IO.popen(File.join(@base, '_scripts', script["command"]))
+        result[script["name"]] = p.read || ""
+        p.close
+      end
+      result
     end
   end
 end
