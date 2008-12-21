@@ -72,7 +72,8 @@ module Jekyll
     def do_scripts(scripts)
       result = {}
       scripts.each do |script|
-        p = IO.popen(File.join(@base, '_scripts', script["command"]))
+        p = IO.popen(File.join(@base, '_scripts', script["command"]) +
+                     ' ' + @base)
         result[script["name"]] = p.read || ""
         p.close
       end
