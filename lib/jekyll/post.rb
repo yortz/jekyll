@@ -22,7 +22,7 @@ module Jekyll
     attr_accessor :data, :content, :output
     
     # Initialize this Post instance.
-    #   +base+ is the String path to the dir containing the post file
+    #   +base+ is the String path to the source
     #   +name+ is the String filename of the post file
     #
     # Returns <Post>
@@ -30,8 +30,10 @@ module Jekyll
       @base = base
       @name = name
       
+      postbase = File.join(base, '_posts')
+      
       self.process(name)
-      self.read_yaml(base, name)
+      self.read_yaml(postbase, name)
       #Removed to avoid munging of liquid tags, replaced in convertible.rb#48
       #self.transform
     end
