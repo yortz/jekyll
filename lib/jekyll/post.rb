@@ -65,7 +65,7 @@ module Jekyll
     def dir
       permalink ?
         permalink.to_s.split("/")[0..-2].join("/") :
-        date.strftime("/%Y/%m/%d/")
+        date.strftime("/%Y/%m/%d/") + self.slug + "/"
     end
     
     # The full path and filename of the post.
@@ -82,7 +82,7 @@ module Jekyll
     #
     # Returns <String>
     def url
-      self.dir + self.slug + ".html"
+      self.dir
     end
     
     # The UID for this post (useful in feeds)
@@ -90,7 +90,7 @@ module Jekyll
     #
     # Returns <String>
     def id
-      self.dir + self.slug
+      self.url
     end
     
     # Calculate related posts.
@@ -134,7 +134,7 @@ module Jekyll
     def write(dest)
       FileUtils.mkdir_p(File.join(dest, dir))
       
-      path = File.join(dest, self.url)
+      path = File.join(dest, self.url, "index.html")
       File.open(path, 'w') do |f|
         f.write(self.output)
       end
