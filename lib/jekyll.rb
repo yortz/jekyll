@@ -12,11 +12,7 @@ require 'time'
 # 3rd party
 require 'liquid'
 require 'redcloth'
-begin
-  require 'maruku'
-rescue LoadError
-  puts "The maruku gem is required for markdown support!"
-end
+require 'bluecloth'
 
 # internal requires
 require 'jekyll/site'
@@ -38,7 +34,7 @@ module Jekyll
   
   Jekyll.lsi = false
   Jekyll.pygments = false
-  Jekyll.markdown_proc = Proc.new { |x| Maruku.new(x).to_html }
+  Jekyll.markdown_proc = Proc.new { |x| BlueCloth.new(x).to_html }
   
   def self.process(source, dest)
     require 'classifier' if Jekyll.lsi
