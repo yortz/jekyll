@@ -1,13 +1,18 @@
 module Jekyll
   
+  # we are replacing Liquid's include tag because it is horribly, horribly
+  # broken.
   class IncludeTag < Liquid::Tag
-    def initialize(tag_name, file, tokens)
+    def initialize(tag_name, markup, tokens)
       super
-      @file = file.strip
+
+      @template = markup.strip
     end
-    
+
     def render(context)
-      File.read(File.join(Jekyll.source, '_includes', @file))
+      file = File.join(Jekyll.source, '_includes', @template)
+      partial = Liquid::Template.parse(File.read(file))
+      partial.render(context, [Jekyll::Filters])
     end
   end
   
