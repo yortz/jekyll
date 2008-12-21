@@ -10,7 +10,7 @@ module Jekyll
     #   +base+ is the String path to the <source>
     #   +name+ is the String filename of the post file
     #
-    # Returns <Page>
+    # Returns <Layout>
     def initialize(base, name)
       @base = base
       @name = name
