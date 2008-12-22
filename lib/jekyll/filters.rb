@@ -20,6 +20,11 @@ module Jekyll
     def number_of_words(input)
       input.split.length
     end
+
+    def html_truncatewords(input, words = 15, truncate_string = "...")
+      doc = Hpricot.parse(input)
+      (doc/:"text()").to_s.split[0..words].join(' ') + truncate_string
+    end
   end
   
 end

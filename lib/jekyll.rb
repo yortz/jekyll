@@ -13,6 +13,7 @@ require 'time'
 require 'liquid'
 require 'redcloth'
 require 'bluecloth'
+require 'hpricot'
 
 # internal requires
 require 'jekyll/site'
