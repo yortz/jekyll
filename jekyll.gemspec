@@ -24,26 +24,29 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<RedCloth>, [">= 0"])
+      s.add_runtime_dependency(%q<BlueCloth>, [">= 0"])
       s.add_runtime_dependency(%q<liquid>, [">= 0"])
       s.add_runtime_dependency(%q<classifier>, [">= 0"])
-      s.add_runtime_dependency(%q<maruku>, [">= 0"])
+      s.add_runtime_dependency(%q<hpricot>, [">= 0"])
       s.add_runtime_dependency(%q<directory_watcher>, [">= 0"])
       s.add_runtime_dependency(%q<open4>, [">= 0"])
       s.add_development_dependency(%q<hoe>, [">= 1.8.0"])
     else
       s.add_dependency(%q<RedCloth>, [">= 0"])
+      s.add_dependency(%q<BlueCloth>, [">= 0"])
       s.add_dependency(%q<liquid>, [">= 0"])
       s.add_dependency(%q<classifier>, [">= 0"])
-      s.add_dependency(%q<maruku>, [">= 0"])
+      s.add_dependency(%q<hpricot>, [">= 0"])
       s.add_dependency(%q<directory_watcher>, [">= 0"])
       s.add_dependency(%q<open4>, [">= 0"])
       s.add_dependency(%q<hoe>, [">= 1.8.0"])
     end
   else
     s.add_dependency(%q<RedCloth>, [">= 0"])
+    s.add_dependency(%q<BlueCloth>, [">= 0"])
     s.add_dependency(%q<liquid>, [">= 0"])
     s.add_dependency(%q<classifier>, [">= 0"])
-    s.add_dependency(%q<maruku>, [">= 0"])
+    s.add_dependency(%q<hpricot>, [">= 0"])
     s.add_dependency(%q<directory_watcher>, [">= 0"])
     s.add_dependency(%q<open4>, [">= 0"])
     s.add_dependency(%q<hoe>, [">= 1.8.0"])
