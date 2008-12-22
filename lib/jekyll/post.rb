@@ -19,7 +19,7 @@ module Jekyll
     end
     
     attr_accessor :date, :slug, :ext
-    attr_accessor :data, :content, :output
+    attr_accessor :data, :content, :extended, :output
     
     # Initialize this Post instance.
     #   +base+ is the String path to the source
@@ -144,11 +144,21 @@ module Jekyll
     #
     # Returns <Hash>
     def to_liquid
+      if self.data.key? "time"
+        time = Time.parse self.data["time"]
+        self.date = Time.mktime(self.date.year,
+                                self.date.month,
+                                self.date.day,
+                                time.hour,
+                                time.min)
+      end
       props = { "title" => self.data["title"] || "",
         "url" => self.url,
         "date" => self.date,
         "id" => self.id,
-        "content" => self.content }
+        "content" => self.content,
+        "extended" => self.extended || ""
+      }
       props.merge(self.data) do |key, old, new|
         old
       end

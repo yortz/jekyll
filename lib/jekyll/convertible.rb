@@ -2,7 +2,11 @@ module Jekyll
   module Convertible
     # Return the contents as a string
     def to_s
-      self.content || ''
+      if self.is_a? Jekyll::Post
+        (self.content || '') + (self.extended || '')
+      else
+        self.content || ''
+      end
     end
     
     # Read the YAML frontmatter
@@ -12,11 +16,18 @@ module Jekyll
     # Returns nothing
     def read_yaml(base, name)
       self.content = File.read(File.join(base, name))
-      
-      if self.content =~ /^(---.*\n.*?)\n---.*\n/m
-        self.content = self.content[($1.size + 5)..-1]
-        
+
+      if self.content =~ /^(---.*?\n.*?)\n---.*?\n(.*)/m
         self.data = YAML.load($1)
+        self.content = $2
+        
+        # if we have an extended section, separate that from content
+        if self.is_a? Jekyll::Post
+          if self.data.key? 'extended'
+            marker = self.data['extended']
+            self.content, self.extended = self.content.split(marker + "\n", 2)
+          end
+        end
       end
     end
   
@@ -28,9 +39,15 @@ module Jekyll
       when ".textile":
         self.ext = ".html"
         self.content = RedCloth.new(self.content).to_html
+        if self.is_a? Jekyll::Post and self.extended
+          self.extended = RedCloth.new(self.extended).to_html
+        end
       when ".markdown":
         self.ext = ".html"
         self.content = Jekyll.markdown_proc.call(self.content)
+        if self.is_a? Jekyll::Post and self.extended
+          self.extended = Jekyll.markdown_proc.call(self.extended)
+        end
       end
     end
     
@@ -43,12 +60,18 @@ module Jekyll
       # construct payload
       payload = payload.merge(site_payload)
       # render content
-      self.content = Liquid::Template.parse(self.content).render(payload, [Jekyll::Filters])
+      unless self.is_a? Jekyll::Post
+        self.content = Liquid::Template.parse(self.content).render(payload, [Jekyll::Filters])
+      end
       self.transform
       
       # output keeps track of what will finally be written
-      self.output = self.content
-      
+      if self.is_a? Jekyll::Post and self.extended
+        self.output = self.content + self.extended
+      else
+        self.output = self.content
+      end
+
       # recursively render layouts
       layout = layouts[self.data["layout"]]
       while layout
