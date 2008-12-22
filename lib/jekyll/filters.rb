@@ -8,6 +8,10 @@ module Jekyll
     def date_to_xmlschema(date)
       date.xmlschema
     end
+
+    def date_to_utc(date)
+      date.getutc
+    end
     
     def xml_escape(input)
       input.gsub("<", "&lt;").gsub(">", "&gt;")
