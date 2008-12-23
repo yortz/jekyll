@@ -59,6 +59,7 @@ module Jekyll
     def do_layout(payload, layouts, site_payload)
       # construct payload
       payload = payload.merge(site_payload)
+
       # render content
       unless self.is_a? Jekyll::Post
         self.content = Liquid::Template.parse(self.content).render(payload, [Jekyll::Filters])

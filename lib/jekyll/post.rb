@@ -124,7 +124,9 @@ module Jekyll
       # construct post payload
       related = related_posts(site_payload["site"]["posts"])
       payload = {"page" => self.to_liquid.merge(self.data)}
-      do_layout(payload, layouts, site_payload.merge({"site" => {"related_posts" => related}}))
+
+      site_payload["site"].merge!({"related_posts" => related})
+      do_layout(payload, layouts, site_payload)
     end
     
     # Write the generated post file to the destination directory.
