@@ -65,12 +65,16 @@ module Jekyll
         self.content = Liquid::Template.parse(self.content).render(payload, [Jekyll::Filters])
       end
       self.transform
-      
+
       # output keeps track of what will finally be written
-      if self.is_a? Jekyll::Post and self.extended
-        self.output = self.content + self.extended
-      else
-        self.output = self.content
+      self.output = self.content
+      if self.is_a? Jekyll::Post 
+        # make sure we update the payload with transformed data
+        payload["post"].merge!({"content" => self.content,
+                                 "extended" => self.extended})
+        if self.extended
+          self.output = self.content + self.extended
+        end
       end
 
       # recursively render layouts
