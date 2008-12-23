@@ -76,7 +76,7 @@ module Jekyll
       # recursively render layouts
       layout = layouts[self.data["layout"]]
       while layout
-        payload = payload.merge({"content" => self.output, "page" => self.data})
+        payload = payload.merge({"content" => self.output})
 
         # process any scripts
         if layout.data["scripts"]
