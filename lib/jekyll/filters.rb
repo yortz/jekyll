@@ -1,10 +1,9 @@
 module Jekyll
-  
   module Filters
     def date_to_string(date)
       date.strftime("%d %b %Y")
     end
-    
+
     def date_to_xmlschema(date)
       date.xmlschema
     end
@@ -12,11 +11,11 @@ module Jekyll
     def date_to_utc(date)
       date.getutc
     end
-    
+
     def xml_escape(input)
       input.gsub("<", "&lt;").gsub(">", "&gt;")
     end
-    
+
     def number_of_words(input)
       input.split.length
     end
@@ -26,5 +25,4 @@ module Jekyll
       (doc/:"text()").to_s.split[0..words].join(' ') + truncate_string
     end
   end
-  
 end
