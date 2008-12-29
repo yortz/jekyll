@@ -2,7 +2,7 @@ module Jekyll
   
   class Site
     attr_accessor :source, :dest
-    attr_accessor :layouts, :posts
+    attr_accessor :layouts, :posts, :collated
     
     # Initialize the site
     #   +source+ is String path to the source directory containing
@@ -16,6 +16,7 @@ module Jekyll
       self.dest = dest
       self.layouts = {}
       self.posts = []
+      self.collated = {}
     end
     
     # Do the actual work of processing the site and generating the
@@ -26,6 +27,7 @@ module Jekyll
       self.read_layouts
       self.read_posts
       self.write_posts
+      self.write_archives
       self.transform_pages
     end
     
@@ -58,8 +60,23 @@ module Jekyll
       entries.each do |f|
         self.posts << Post.new(self.source, f) if Post.valid?(f)
       end
-      
+
       self.posts.sort!
+
+      # build collated post structure for archives
+      self.posts.reverse.each do |post|
+        y, m, d = post.date.year, post.date.month, post.date.day
+        unless self.collated.key? y
+          self.collated[y] = {}
+        end
+        unless self.collated[y].key? m
+          self.collated[y][m] = {}
+        end
+        unless self.collated[y][m].key? d
+          self.collated[y][m][d] = []
+        end
+        self.collated[y][m][d] += [post]
+      end
     rescue Errno::ENOENT => e
       # ignore missing layout dir
     end
@@ -73,7 +90,41 @@ module Jekyll
         post.write(self.dest)
       end
     end
-    
+
+    def write_archive(dir, type)
+      archive = Archive.new(self.source, dir, type)
+      archive.add_layout(self.layouts, site_payload)
+      archive.write(self.dest)
+    end
+
+    # Write out archive pages based on special layouts.  Yearly,
+    # monthly, and daily archives will be written if layouts exist.
+    # Yearly archives will be in <dest>/<year>/index.html and other archives
+    # will be generated similarly.
+    #
+    # Returns nothing.
+    def write_archives
+      self.collated.keys.each do |year|
+        if self.layouts.key? 'archive_yearly'
+          self.write_archive(year.to_s, 'archive_yearly')
+        end
+
+        self.collated[year].keys.each do |month|
+          if self.layouts.key? 'archive_monthly'
+            self.write_archive(File.join(year.to_s, month.to_s),
+                               'archive_monthly')
+          end
+
+          self.collated[year][month].keys.each do |day|
+            if self.layouts.key? 'archive_daily'
+              self.write_archive(File.join(year.to_s, month.to_s, day.to_s),
+                                 'archive_daily')
+            end
+          end
+        end
+      end
+    end
+
     # Copy all regular files from <source> to <dest>/ ignoring
     # any files/directories that are hidden (start with ".") or contain
     # site content (start with "_")
@@ -106,12 +157,14 @@ module Jekyll
         end
       end
     end
-    
+
     # The Hash payload containing site-wide data
     #
     # Returns {"site" => {"time" => <Time>, "posts" => [<Post>]}}
     def site_payload
-      {"site" => {"time" => Time.now, "posts" => self.posts.sort.reverse}}
+      {"site" => {"time" => Time.now,
+          "posts" => self.posts.sort.reverse,
+          "collated_posts" => self.collated}}
     end
   end
 
