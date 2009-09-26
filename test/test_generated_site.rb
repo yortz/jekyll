@@ -36,5 +36,14 @@ class TestGeneratedSite < Test::Unit::TestCase
       assert File.exists?(dest_dir('/about/index.html'))
       assert File.exists?(dest_dir('/contacts.html'))
     end
+
+    should "generate index pages for tags" do
+      ['code', 'food', 'pizza'].each {|tag|
+        filename = dest_dir("/tags/#{tag}/index.html")
+        
+        assert File.exists?(filename)
+        assert File.read(filename).include?("<h1>Tag: #{tag} (1 posts)</h1>")
+      }
+    end
   end
 end
