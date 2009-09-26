@@ -5,6 +5,14 @@ module Jekyll
       RedCloth.new(input).to_html
     end
 
+    def markdownize(input)
+      if defined? RDiscount
+        RDiscount.new(input).to_html 
+      elsif defined? Maruku
+        Maruku.new(input).to_html
+      end
+    end
+
     def date_to_string(date)
       date.strftime("%d %b %Y")
     end
