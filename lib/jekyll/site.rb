@@ -95,7 +95,7 @@ module Jekyll
       self.read_layouts
       self.transform_pages
       self.write_posts
-      self.write_tag_indexes
+      self.write_tag_detailes
     end
 
     # Read all the files in <source>/_layouts into memory for later use.
@@ -160,16 +160,16 @@ module Jekyll
     # Write each tag page
     #
     # Returns nothing
-    def write_tag_index(dir, tag)
+    def write_tag_detail(dir, tag)
       index = TagIndex.new(self, self.source, dir, tag)
       index.render(self.layouts, site_payload)
       index.write(self.dest)
     end
 
-    def write_tag_indexes
-      if self.layouts.key? 'tag_index'
+    def write_tag_detailes
+      if self.layouts.key? 'tag_detail'
         self.tags.keys.each do |tag|
-          self.write_tag_index(File.join('tags', tag), tag)
+          self.write_tag_detail(File.join('tags', tag), tag)
         end
       end
     end

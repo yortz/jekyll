@@ -28,7 +28,7 @@ class TestSite < Test::Unit::TestCase
 
     should "read layouts" do
       @site.read_layouts
-      assert_equal ["default", "simple", "tag_index"].sort, @site.layouts.keys.sort
+      assert_equal ["default", "simple", "tag_detail"].sort, @site.layouts.keys.sort
     end
 
     should "read posts" do
