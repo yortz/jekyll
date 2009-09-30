@@ -2,7 +2,8 @@ module Jekyll
 
   class Site
     attr_accessor :config, :layouts, :posts, :categories, :exclude,
-                  :source, :dest, :lsi, :pygments, :permalink_style, :tags
+                  :source, :dest, :lsi, :pygments, :permalink_style,
+                  :tags, :collated
 
     # Initialize the site
     #   +config+ is a Hash containing site configurations details
@@ -27,6 +28,7 @@ module Jekyll
       self.posts           = []
       self.categories      = Hash.new { |hash, key| hash[key] = [] }
       self.tags            = Hash.new { |hash, key| hash[key] = [] }
+      self.collated        = {}
     end
 
     def setup
@@ -95,6 +97,7 @@ module Jekyll
       self.read_layouts
       self.transform_pages
       self.write_posts
+      self.write_archives
     end
 
     # Read all the files in <source>/_layouts into memory for later use.
@@ -143,6 +146,20 @@ module Jekyll
 
       self.categories.values.map { |ps| ps.sort! { |a, b| b <=> a} }
       self.tags.values.map { |ps| ps.sort! { |a, b| b <=> a} }
+
+      self.posts.reverse.each do |post|
+        y, m, d = post.date.year, post.date.month, post.date.day
+        unless self.collated.key? y
+          self.collated[ y ] = {}
+        end
+        unless self.collated[y].key? m
+          self.collated[ y ][ m ] = {}
+        end
+        unless self.collated[ y ][ m ].key? d
+          self.collated[ y ][ m ][ d ] = []
+        end
+        self.collated[ y ][ m ][ d ] += post
+      end
     rescue Errno::ENOENT => e
       # ignore missing layout dir
     end
@@ -154,6 +171,36 @@ module Jekyll
       self.posts.each do |post|
         post.write(self.dest)
       end
+    end
+
+    #   Write post archives to <dest>/<year>/, <dest>/<year>/<month>/,
+    #   <dest>/<year>/<month>/<day>/
+    #
+    #   Returns nothing
+    def write_archive( dir, type )
+        archive = Archive.new( self, self.source, dir, type )
+        archive.render( self.layouts, site_payload )
+        archive.write( self.dest )
+    end
+
+    def write_archives
+        self.collated.keys.each do |y|
+            if self.layouts.key? 'archive_yearly'
+                self.write_archive( y.to_s, 'archive_yearly' )
+            end
+
+            self.collated[ y ].keys.each do |m|
+                if self.layouts.key? 'archive_monthly'
+                    self.write_archive( "%04d/%02d" % ( y.to_s, m.to_s ), 'archive_monthy' )
+                end
+
+                self.collated[ y ][ m ].keys.each do |d|
+                    if self.layouts.key? 'archive_daily'
+                        self.write_archive( "%04d/%02d/%02d" % ( y.to_s, m.to_s, d.to_s ), 'archive_daily' )
+                    end
+                end
+            end
+        end
     end
 
     # Copy all regular files from <source> to <dest>/ ignoring
@@ -218,13 +265,15 @@ module Jekyll
     #
     # Returns {"site" => {"time" => <Time>,
     #                     "posts" => [<Post>],
+    #                     "collated_posts" => [<Post>],
     #                     "categories" => [<Post>]}
     def site_payload
       {"site" => self.config.merge({
-          "time"       => Time.now,
-          "posts"      => self.posts.sort { |a,b| b <=> a },
-          "categories" => post_attr_hash('categories'),
-          "tags"       => post_attr_hash('tags')})}
+          "time"            => Time.now,
+          "posts"           => self.posts.sort { |a,b| b <=> a },
+          "collated_posts"  =>  self.collated
+          "categories"      => post_attr_hash('categories'),
+          "tags"            => post_attr_hash('tags')})}
     end
 
     # Filter out any files/directories that are hidden or backup files (start
