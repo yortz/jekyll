@@ -95,7 +95,7 @@ module Jekyll
       self.read_layouts
       self.transform_pages
       self.write_posts
-      self.write_tag_detailes
+      self.write_tag_details
     end
 
     # Read all the files in <source>/_layouts into memory for later use.
@@ -166,7 +166,7 @@ module Jekyll
       index.write(self.dest)
     end
 
-    def write_tag_detailes
+    def write_tag_details
       if self.layouts.key? 'tag_detail'
         self.tags.keys.each do |tag|
           self.write_tag_detail(File.join('tags', tag), tag)
