@@ -36,5 +36,25 @@ class TestGeneratedSite < Test::Unit::TestCase
       assert File.exists?(dest_dir('/about/index.html'))
       assert File.exists?(dest_dir('/contacts.html'))
     end
+
+    should "create yearly archive for 2008" do
+      filename = File.join(dest_dir, '2008', 'index.html')
+      assert File.exists?(filename)
+      assert File.read(filename).include?("<h1>2008</h1>")
+    end
+
+    should "create monthly archive for 2008/02" do
+      filename = File.join(dest_dir, '2008', '02', 'index.html')
+      assert File.exists?(filename)
+      assert File.read(filename).include?("<h1>February 2008</h1>")
+    end
+
+    should "create daily archive for 2008/02/02" do
+      filename = File.join(dest_dir, '2008', '02', '02', 'index.html')
+      assert File.exists?(filename)
+      assert File.read(filename).include?("<h1>February 2, 2008</h1>")
+    end
+
+
   end
 end

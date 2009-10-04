@@ -158,7 +158,7 @@ module Jekyll
         unless self.collated[ y ][ m ].key? d
           self.collated[ y ][ m ][ d ] = []
         end
-        self.collated[ y ][ m ][ d ] += post
+        self.collated[ y ][ m ][ d ] += [ post ]
       end
     rescue Errno::ENOENT => e
       # ignore missing layout dir
@@ -191,12 +191,12 @@ module Jekyll
 
             self.collated[ y ].keys.each do |m|
                 if self.layouts.key? 'archive_monthly'
-                    self.write_archive( "%04d/%02d" % ( y.to_s, m.to_s ), 'archive_monthy' )
+                    self.write_archive( "%04d/%02d" % [ y.to_s, m.to_s ], 'archive_monthly' )
                 end
 
                 self.collated[ y ][ m ].keys.each do |d|
                     if self.layouts.key? 'archive_daily'
-                        self.write_archive( "%04d/%02d/%02d" % ( y.to_s, m.to_s, d.to_s ), 'archive_daily' )
+                        self.write_archive( "%04d/%02d/%02d" % [ y.to_s, m.to_s, d.to_s ], 'archive_daily' )
                     end
                 end
             end
@@ -271,7 +271,7 @@ module Jekyll
       {"site" => self.config.merge({
           "time"            => Time.now,
           "posts"           => self.posts.sort { |a,b| b <=> a },
-          "collated_posts"  =>  self.collated
+          "collated_posts"  => self.collated,
           "categories"      => post_attr_hash('categories'),
           "tags"            => post_attr_hash('tags')})}
     end
