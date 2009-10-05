@@ -36,6 +36,7 @@ module Jekyll
     'server_port'  => 4000,
 
     'source'       => '.',
+    'content_root' => File.join('.', '_posts'),
     'destination'  => File.join('.', '_site'),
 
     'lsi'          => false,

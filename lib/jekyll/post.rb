@@ -34,7 +34,11 @@ module Jekyll
     # Returns <Post>
     def initialize(site, source, dir, name)
       @site = site
-      @base = File.join(source, dir, '_posts')
+      if File.directory?(dir)
+        @base = dir
+      else
+        @base = File.join(source, dir, '_posts')
+      end
       @name = name
 
       self.categories = dir.split('/').reject { |x| x.empty? }
