@@ -65,6 +65,31 @@ class TestSite < Test::Unit::TestCase
       @site.exclude = excludes
       assert_equal includes, @site.filter_entries(excludes + includes)
     end
+
+    context 'with a valid external content root' do
+      setup do
+        @content_root = File.join(File.expand_path(File.dirname(__FILE__)), "external_content_root")
+        stub(Jekyll).configuration do
+          Jekyll::DEFAULTS.merge({'source' => source_dir, 'destination' => dest_dir, 'content_root' => @content_root })
+        end
+        @site = Site.new(Jekyll.configuration)
+      end
+
+      should "read posts when the root is explicitly specified" do
+        @site.read_posts(@content_root)
+        posts  = Dir[external_source_dir('**', '*')]
+        assert_equal posts.size, @site.posts.size
+      end
+
+      should "contain externally rooted posts when processed" do
+        clear_dest
+        @site.process
+
+        posts  = Dir[external_source_dir('**', '*')]
+        posts += Dir[source_dir("**", "_posts", "*")] 
+        assert_equal posts.size - 1, @site.posts.size
+      end
+    end
     
     context 'with an invalid markdown processor in the configuration' do
       

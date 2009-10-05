@@ -21,6 +21,10 @@ class Test::Unit::TestCase
     File.join(File.dirname(__FILE__), 'source', *subdirs)
   end
 
+  def external_source_dir(*subdirs)
+    File.join(File.dirname(__FILE__), 'external_content_root', *subdirs)
+  end
+
   def clear_dest
     FileUtils.rm_rf(dest_dir)
   end
