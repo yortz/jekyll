@@ -36,6 +36,9 @@ module Jekyll
       @site = site
       if File.directory?(dir)
         @base = dir
+        if dir == site.content_root
+          dir = ''
+        end
       else
         @base = File.join(source, dir, '_posts')
       end

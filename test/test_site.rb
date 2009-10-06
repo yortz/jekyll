@@ -81,6 +81,12 @@ class TestSite < Test::Unit::TestCase
         assert_equal posts.size, @site.posts.size
       end
 
+      should "correct categorize posts" do
+        @site.read_posts(@content_root)
+        posts  = Dir[external_source_dir('**', '*')]
+        assert_equal 1, @site.categories['external'].size
+      end
+
       should "contain externally rooted posts when processed" do
         clear_dest
         @site.process
