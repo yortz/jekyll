@@ -1,7 +1,7 @@
 module Jekyll
 
   class Site
-    attr_accessor :config, :layouts, :posts, :categories, :exclude,
+    attr_accessor :config, :layouts, :posts, :categories, :exclude, :content_root
                   :source, :dest, :lsi, :pygments, :permalink_style,
                   :tags, :collated
 
@@ -13,6 +13,7 @@ module Jekyll
       self.config          = config.clone
 
       self.source          = config['source']
+      self.content_root    = config['content_root']
       self.dest            = config['destination']
       self.lsi             = config['lsi']
       self.pygments        = config['pygments']
@@ -96,6 +97,9 @@ module Jekyll
       self.reset
       self.read_layouts
       self.transform_pages
+      if self.content_root
+        self.read_posts(self.content_root)
+      end
       self.write_posts
       self.write_tag_details
       self.write_archives
@@ -121,7 +125,11 @@ module Jekyll
     #
     # Returns nothing
     def read_posts(dir)
-      base = File.join(self.source, dir, '_posts')
+      if File.directory?(dir)
+        base = dir
+      else
+        base = File.join(self.source, dir, '_posts')
+      end
       entries = []
       Dir.chdir(base) { entries = filter_entries(Dir['**/*']) }
 

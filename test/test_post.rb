@@ -5,6 +5,10 @@ class TestPost < Test::Unit::TestCase
     Post.new(@site, source_dir, '', file)
   end
 
+  def setup_external_post(file)
+    Post.new(@site, source_dir, @content_root, file)
+  end
+
   def do_render(post)
     layouts = { "default" => Layout.new(@site, source_dir('_layouts'), "simple.html")}
     post.render(layouts, {"site" => {"posts" => []}})
@@ -298,5 +302,27 @@ class TestPost < Test::Unit::TestCase
       assert_equal ['foo'], post.categories
     end
 
+    context "in an external content root" do
+      context "rendering" do
+        setup do
+          clear_dest
+          @content_root = File.join(File.expand_path(File.dirname(__FILE__)), "external_content_root")
+          stub(Jekyll).configuration do
+            Jekyll::DEFAULTS.merge({ 'content_root' => @content_root })
+          end
+          @site = Site.new(Jekyll.configuration)
+        end
+        should "render properly" do
+          post = setup_external_post("2009-10-05-external-content-root.markdown")
+          do_render(post)
+
+          assert_equal "<<< <p>This should be published, even though it does not live in the normal <code>_posts</code> directory with all the other posts.</p> >>>", post.output
+        end
+        should "have the correct categories" do
+          post = setup_external_post("2009-10-05-external-content-root.markdown")
+          assert_equal ['external'], post.categories
+        end
+      end
+    end
   end
 end
