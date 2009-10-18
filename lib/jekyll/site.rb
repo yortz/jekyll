@@ -1,7 +1,7 @@
 module Jekyll
 
   class Site
-    attr_accessor :config, :layouts, :posts, :categories, :exclude, :content_root
+    attr_accessor :config, :layouts, :posts, :categories, :exclude, :content_root,
                   :source, :dest, :lsi, :pygments, :permalink_style,
                   :tags, :collated
 
@@ -96,10 +96,10 @@ module Jekyll
     def process
       self.reset
       self.read_layouts
-      self.transform_pages
       if self.content_root
         self.read_posts(self.content_root)
       end
+      self.transform_pages
       self.write_posts
       self.write_tag_details
       self.write_archives
@@ -197,6 +197,8 @@ module Jekyll
           self.write_tag_detail(File.join('tags', tag), tag)
         end
       end
+    end
+
     #   Write post archives to <dest>/<year>/, <dest>/<year>/<month>/,
     #   <dest>/<year>/<month>/<day>/
     #
