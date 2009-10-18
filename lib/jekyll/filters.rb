@@ -6,10 +6,16 @@ module Jekyll
     end
 
     def markdownize(input)
-      if defined? RDiscount
-        RDiscount.new(input).to_html 
-      elsif defined? Maruku
-        Maruku.new(input).to_html
+      if input
+        if defined? RDiscount
+          RDiscount.new(input, :smart).to_html 
+        elsif defined? Maruku
+          Maruku.new(input, :smart).to_html
+        else
+          input
+        end
+      else
+        ''
       end
     end
 

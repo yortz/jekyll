@@ -43,7 +43,7 @@ module Jekyll
             require 'rdiscount'
 
             def markdown(content)
-              RDiscount.new(content).to_html
+              RDiscount.new(content, :smart).to_html
             end
 
           rescue LoadError
@@ -54,7 +54,7 @@ module Jekyll
             require 'maruku'
 
             def markdown(content)
-              Maruku.new(content).to_html
+              Maruku.new(content, :smart).to_html
             end
 
             if self.config['maruku']['use_divs']
