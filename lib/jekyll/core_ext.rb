@@ -28,3 +28,11 @@ class Date
     strftime("%Y-%m-%dT%H:%M:%S%Z")
   end if RUBY_VERSION < '1.9'
 end
+
+
+require 'ostruct'
+class ClosedStruct < OpenStruct
+  def method_missing(symbol, *args)
+    raise(NoMethodError, "undefined method `#{symbol}' for #{self}")
+  end
+end

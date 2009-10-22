@@ -42,6 +42,7 @@ Gem::Specification.new do |s|
      "lib/jekyll/convertible.rb",
      "lib/jekyll/core_ext.rb",
      "lib/jekyll/filters.rb",
+     "lib/jekyll/haml_helpers.rb",
      "lib/jekyll/layout.rb",
      "lib/jekyll/page.rb",
      "lib/jekyll/pager.rb",

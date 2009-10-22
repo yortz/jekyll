@@ -47,6 +47,14 @@ opts = OptionParser.new do |opts|
   opts.on("--rdiscount", "Use rdiscount gem for Markdown") do
     options['markdown'] = 'rdiscount'
   end
+  
+  # opts.on("--sass", "Use Sass from haml gem for CSS generation") do
+  #   options['sass'] = true
+  # end
+  
+  opts.on("--haml", "Enable using Haml for posts and pages") do
+    options['haml'] = true
+  end
 
   opts.on("--permalink [TYPE]", "Use 'date' (default) for YYYY/MM/DD") do |style|
     options['permalink'] = style unless style.nil?
