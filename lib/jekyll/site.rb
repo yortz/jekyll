@@ -111,10 +111,10 @@ module Jekyll
       if self.content_root
         self.read_posts(self.content_root)
       end
-      self.transform_pages
       self.write_posts
       self.write_tag_details
       self.write_archives
+      self.transform_pages
     end
 
     # Read all the files in <source>/_layouts into memory for later use.
@@ -215,10 +215,10 @@ module Jekyll
     #   <dest>/<year>/<month>/<day>/
     #
     #   Returns nothing
-    def write_archive( dir, type )
-        archive = Archive.new( self, self.source, dir, type )
-        archive.render( self.layouts, site_payload )
-        archive.write( self.dest )
+    def write_archive(dir, type)
+      archive = Archive.new(self.source, dir, type)
+      archive.add_layout(self.layouts, site_payload)
+      archive.write(self.dest)
     end
 
     def write_archives
@@ -229,12 +229,12 @@ module Jekyll
 
             self.collated[ y ].keys.each do |m|
                 if self.layouts.key? 'archive_monthly'
-                    self.write_archive( "%04d/%02d" % [ y.to_s, m.to_s ], 'archive_monthly' )
+                    self.write_archive(File.join(y.to_s, m.to_s), 'archive_monthly' )
                 end
 
                 self.collated[ y ][ m ].keys.each do |d|
                     if self.layouts.key? 'archive_daily'
-                        self.write_archive( "%04d/%02d/%02d" % [ y.to_s, m.to_s, d.to_s ], 'archive_daily' )
+                        self.write_archive( File.join(y.to_s, m.to_s, d_to.s), 'archive_daily' )
                     end
                 end
             end
