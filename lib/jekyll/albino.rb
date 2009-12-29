@@ -38,7 +38,7 @@
 #
 # To see all lexers and formatters available, run `pygmentize -L`.
 #
-# Chris Wanstrath // chris@ozmm.org 
+# Chris Wanstrath // chris@ozmm.org
 #         GitHub // http://github.com
 #
 require 'open4'
@@ -56,18 +56,24 @@ class Albino
 
   def initialize(target, lexer = :text, format = :html)
     @target  = File.exists?(target) ? File.read(target) : target rescue target
-    @options = { :l => lexer, :f => format }
+    @options = { :l => lexer, :f => format, :O => 'encoding=utf-8' }
   end
 
   def execute(command)
-    pid, stdin, stdout, stderr = Open4.popen4(command)
-    stdin.puts @target
-    stdin.close
-    stdout.read.strip
+    output = ''
+    Open4.popen4(command) do |pid, stdin, stdout, stderr|
+      stdin.puts @target
+      stdin.close
+      output = stdout.read.strip
+      [stdout, stderr].each { |io| io.close }
+    end
+    output
   end
 
   def colorize(options = {})
-    execute @@bin + convert_options(options)
+    html = execute(@@bin + convert_options(options))
+    # Work around an RDiscount bug: http://gist.github.com/97682
+    html.to_s.sub(%r{</pre></div>\Z}, "</pre>\n</div>")
   end
   alias_method :to_s, :colorize
 

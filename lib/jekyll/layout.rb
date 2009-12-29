@@ -2,46 +2,34 @@ module Jekyll
 
   class Layout
     include Convertible
-    
+
+    attr_accessor :site
     attr_accessor :ext
     attr_accessor :data, :content
-    
+
     # Initialize a new Layout.
+    #   +site+ is the Site
     #   +base+ is the String path to the <source>
     #   +name+ is the String filename of the post file
     #
-    # Returns <Layout>
-    def initialize(base, name)
+    # Returns <Page>
+    def initialize(site, base, name)
+      @site = site
       @base = base
       @name = name
-      
+
       self.data = {}
-      
+
       self.process(name)
       self.read_yaml(base, name)
     end
-    
+
     # Extract information from the layout filename
     #   +name+ is the String filename of the layout file
     #
     # Returns nothing
     def process(name)
       self.ext = File.extname(name)
-    end
-    
-    # Add any necessary layouts to this post
-    #   +layouts+ is a Hash of {"name" => "layout"}
-    #   +site_payload+ is the site payload hash
-    #
-    # Returns nothing
-    def add_layout(layouts, site_payload)
-      payload = {"page" => self.data}.merge(site_payload)
-      self.content = Liquid::Template.parse(self.content).render(payload, [Jekyll::Filters])
-      
-      layout = layouts[self.data["layout"]] || self.content
-      payload = {"content" => self.content, "page" => self.data}
-      
-      self.content = Liquid::Template.parse(layout).render(payload, [Jekyll::Filters])
     end
   end
 

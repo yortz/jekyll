@@ -6,7 +6,8 @@ module Jekyll
     #   +dir+ is the String path between <source> and the file
     #
     # Returns <Archive>
-    def initialize(base, dir, type)
+    def initialize(site, base, dir, type)
+      @site = site
       @base = base
       @dir = dir
       @name = 'index.html'

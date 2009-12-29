@@ -1,0 +1,10 @@
+---
+layout: default
+---
+ 
+<h1>Tag: {{ page.tag }} ({{ site.tags[page.tag] | size }} posts)</h1>
+<ul>
+  {% for p in site.categories[page.tag] reversed %}
+  <li><a href='{{ p.url }}'>{{ p.title }}</a></li>
+  {% endfor %}
+</ul>

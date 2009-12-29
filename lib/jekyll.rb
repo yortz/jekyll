@@ -6,43 +6,83 @@ require 'rubygems'
 # core
 require 'fileutils'
 require 'time'
+require 'yaml'
 
 # stdlib
 
 # 3rd party
 require 'liquid'
 require 'redcloth'
-require 'bluecloth'
-require 'hpricot'
 
 # internal requires
+require 'jekyll/core_ext'
+require 'jekyll/pager'
 require 'jekyll/site'
 require 'jekyll/convertible'
 require 'jekyll/layout'
 require 'jekyll/page'
 require 'jekyll/post'
-require 'jekyll/archive'
 require 'jekyll/filters'
 require 'jekyll/tags/highlight'
 require 'jekyll/tags/include'
 require 'jekyll/albino'
+require 'jekyll/tag_detail'
+require 'jekyll/archive'
 
 module Jekyll
-  VERSION = '0.2.1'
-  
-  class << self
-    attr_accessor :source, :dest, :lsi, :pygments, :markdown_proc
+  # Default options. Overriden by values in _config.yml or command-line opts.
+  # (Strings rather symbols used for compatability with YAML)
+  DEFAULTS = {
+    'auto'         => false,
+    'server'       => false,
+    'server_port'  => 4000,
+
+    'source'       => '.',
+    'content_root' => File.join('.', '_posts'),
+    'destination'  => File.join('.', '_site'),
+
+    'lsi'          => false,
+    'pygments'     => false,
+    'markdown'     => 'maruku',
+    'permalink'    => 'date',
+
+    'maruku'       => {
+      'use_tex'    => false,
+      'use_divs'   => false,
+      'png_engine' => 'blahtex',
+      'png_dir'    => 'images/latex',
+      'png_url'    => '/images/latex'
+    }
+  }
+
+  # Generate a Jekyll configuration Hash by merging the default options
+  # with anything in _config.yml, and adding the given options on top
+  #   +override+ is a Hash of config directives
+  #
+  # Returns Hash
+  def self.configuration(override)
+    # _config.yml may override default source location, but until
+    # then, we need to know where to look for _config.yml
+    source = override['source'] || Jekyll::DEFAULTS['source']
+
+    # Get configuration from <source>/_config.yml
+    config_file = File.join(source, '_config.yml')
+    begin
+      config = YAML.load_file(config_file)
+      raise "Invalid configuration - #{config_file}" if !config.is_a?(Hash)
+      STDOUT.puts "Configuration from #{config_file}"
+    rescue => err
+      STDERR.puts "WARNING: Could not read configuration. Using defaults (and options)."
+      STDERR.puts "\t" + err.to_s
+      config = {}
+    end
+
+    # Merge DEFAULTS < _config.yml < override
+    Jekyll::DEFAULTS.deep_merge(config).deep_merge(override)
   end
-  
-  Jekyll.lsi = false
-  Jekyll.pygments = false
-  Jekyll.markdown_proc = Proc.new { |x| BlueCloth.new(x).to_html }
-  
-  def self.process(source, dest)
-    require 'classifier' if Jekyll.lsi
-    
-    Jekyll.source = source
-    Jekyll.dest = dest
-    Jekyll::Site.new(source, dest).process
+
+  def self.version
+    yml = YAML.load(File.read(File.join(File.dirname(__FILE__), *%w[.. VERSION.yml])))
+    "#{yml[:major]}.#{yml[:minor]}.#{yml[:patch]}"
   end
 end
