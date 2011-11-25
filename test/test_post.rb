@@ -64,6 +64,15 @@ class TestPost < Test::Unit::TestCase
         assert_equal "/2009/03/12/hash-%231.html", @post.url
         assert_equal "/2009/03/12/hash-#1", @post.id
       end
+      
+      should "escape urls when params defined" do
+        file = "2011-11-25-unescape-hash-#1.textile"
+        @post.categories = []
+        @post.process(file)
+        @post.read_yaml(@source, file)
+        assert_equal "/2011/11/25/unescape-hash-#1.html", @post.url
+        assert_equal "/2011/11/25/unescape-hash-#1", @post.id
+      end
 
       should "respect permalink in yaml front matter" do
         file = "2008-12-03-permalinked-post.textile"

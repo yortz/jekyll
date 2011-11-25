@@ -20,7 +20,7 @@ module Jekyll
 
     attr_accessor :site
     attr_accessor :data, :content, :output, :ext
-    attr_accessor :date, :slug, :published, :tags, :categories
+    attr_accessor :date, :slug, :published, :tags, :categories, :escape_url
 
     # Initialize this Post instance.
     #   +site+ is the Site
@@ -50,7 +50,7 @@ module Jekyll
       else
         self.published = true
       end
-
+      
       self.tags = self.data.pluralized_array("tag", "tags")
 
       if self.categories.empty?
@@ -100,6 +100,10 @@ module Jekyll
     def permalink
       self.data && self.data['permalink']
     end
+    
+    def unescape
+      self.data && self.data['escape_url'] == false
+    end
 
     def template
       case self.site.permalink_style
@@ -128,7 +132,7 @@ module Jekyll
           "year"       => date.strftime("%Y"),
           "month"      => date.strftime("%m"),
           "day"        => date.strftime("%d"),
-          "title"      => CGI.escape(slug),
+          "title"      => unescape ? CGI.unescape(slug) : CGI.escape(slug),
           "i_day"      => date.strftime("%d").to_i.to_s,
           "i_month"    => date.strftime("%m").to_i.to_s,
           "categories" => categories.join('/'),
